@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widget/activity_entity.dart';
 import 'package:flutter_widget/new_activity_button.dart';
 
-/**
- * 程序的入口
- */
+///程序的入口
 void main() {
   runApp(MyApp()); //MyApp作为根widget
 }
@@ -22,32 +20,52 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-class MyHomePage extends StatefulWidget {//StatefulWidget意味内部有个state对象，可以改变Widget的状态（外观和行为）。
+/// 首页
+class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
 
-  final String title;//widget的属性总是final类型，即不可变的。因为每次build被调用的时候，将重建widget
+  final String title;
 
+
+///  创建State, 监听Widget的生命周期，同时负责重新构建Widget
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  ///定义listview的数据
   final _items =
       List<ActivityEntity>.generate(5, (i) => ActivityEntity("活动 $i"));
 
+
+  ///这里发布活动， setState() 会触发widget刷新。
+  ///
   void _addActivity() {
-    //调用此方法，通知系统，widget状态发生改变，那么build方法会被重新调用，那么widget会被重新构造出来。
+    //setState是系统函数， 调用此方法，系统会刷新UI，  通知系统，重建build()=>widget，
     //如果我们改变_items的内容，而没有调用setState方法，build方法则不会被系统调用，UI也不会发生任何改变。
     setState(() {
       ActivityEntity entity =
           ActivityEntity("活动 ${DateTime.now().millisecondsSinceEpoch}");
-      _items.add(entity);
+      _items.add(entity);//数据驱动页面刷新
     });
   }
 
   @override
-  Widget build(BuildContext context) { //build方法定义根widget以及它下面的子树
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+
+  /// setStated执行后， build方法将被系统调用。
+  /// 定义根widget以及挂载它下面的子树
+  @override
+  Widget build(BuildContext context) {
+    print("build~~~~~~~~~~~~~");
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -65,21 +83,15 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
       ),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: _addActivity,
-        //   tooltip: 'Increment',
-        //   child: Icon(Icons.add),
-        // ),
-      floatingActionButton: _buildNewButton(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _addActivity,
+          tooltip: 'Increment',
+          child: Icon(Icons.add),
+        ),
+      // floatingActionButton: NewActivityButton(
+      //   onPressed: _addActivity,
+      // )
       // ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
-
-  _buildNewButton(){
-    return NewActivityButton(
-        onPressed: () {
-      //添加一个活动，页面状态发生改变。
-      _addActivity();
-    });
   }
 }
